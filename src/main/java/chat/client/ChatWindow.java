@@ -1,4 +1,4 @@
-package chat.client;
+package main.java.chat.client;
 import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.Color;
@@ -12,6 +12,12 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.SocketException;
 
 public class ChatWindow 
 {
@@ -21,14 +27,20 @@ public class ChatWindow
 	private Button buttonSend;
 	private TextField textField;
 	private TextArea textArea;
-
-	public ChatWindow(String name) 
+	private Socket socket = null;
+	private PrintWriter printWriter = null;
+	
+	public ChatWindow(String name, Socket socket, PrintWriter printWriter) 
 	{
 		frame = new Frame(name);
 		pannel = new Panel();
 		buttonSend = new Button("Send");
 		textField = new TextField();
 		textArea = new TextArea(30, 80);
+		this.socket = socket;
+		this.printWriter = printWriter;
+		
+		new ChatClientReceiveThread(socket).start();
 	}
 
 	public void show() 
@@ -47,7 +59,6 @@ public class ChatWindow
 				
 		// Textfield
 		textField.setColumns(80);
-		
 		textField.addKeyListener(new KeyAdapter()
 		{
 			@Override
@@ -76,13 +87,13 @@ public class ChatWindow
 		{
 			public void windowClosing(WindowEvent e) 
 			{
-				System.exit(0);
 				finish();
 			}
 		});
 		frame.setVisible(true);
 		frame.pack();
 	}
+	
 	
 	private void updateTextArea(String message)
 	{
@@ -97,9 +108,53 @@ public class ChatWindow
 		textField.setText("");
 		textField.requestFocus();
 		updateTextArea(message);
+		
+		if("quit".equals(message)) 
+		{
+			finish();
+		}
+		else
+		{
+			printWriter.println("message:"+message);
+		}
 	}
+	
 	private void finish()
 	{
 		System.out.println(".............");
+		printWriter.println("quit:");
+		System.exit(0);
+	}
+	
+	private class ChatClientReceiveThread extends Thread
+	{
+		Socket socket = null;
+		
+		ChatClientReceiveThread(Socket socket)
+		{
+			this.socket = socket;
+		}
+		
+		@Override
+		public void run() 
+		{
+			try 
+			{
+				BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
+				while(true) 
+				{
+					String message = bufferedReader.readLine();
+					updateTextArea(message);
+				}
+			}
+			catch(SocketException e)
+			{
+				
+			}
+			catch (IOException e) 
+			{
+				e.printStackTrace();
+			}
+		}
 	}
 }

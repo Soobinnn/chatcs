@@ -1,4 +1,4 @@
-package chat.server;
+package main.java.chat.server;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -52,7 +52,6 @@ private static final int PORT = 7000;
 			} 
 			catch (IOException e) 
 			{
-			
 				e.printStackTrace();
 			}
 		}

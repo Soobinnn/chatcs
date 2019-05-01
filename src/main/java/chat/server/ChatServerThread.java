@@ -1,4 +1,4 @@
-package chat.server;
+package main.java.chat.server;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,11 +12,12 @@ import java.util.List;
 
 public class ChatServerThread extends Thread
 {
-	// 1. Remote Host Information
+	
 	private String nickname;
 	private Socket socket;
-	List<Writer> listWriters;
-	PrintWriter printWriter;
+	private List<Writer> listWriters;
+	BufferedReader bufferedReader = null;
+	PrintWriter printWriter = null;
 	
 	public ChatServerThread(Socket socket)
 	{
@@ -34,8 +35,10 @@ public class ChatServerThread extends Thread
 	{
 		try
 		{
+			// 1. Remote Host Information
+			
 			// 2. 스트림 얻기
-			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream(),"utf-8"));
+			bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream(),"utf-8"));
 			
 			printWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(),"utf-8"), true);
 			
@@ -63,7 +66,6 @@ public class ChatServerThread extends Thread
 				{
 					doMessage(tokens[1]);
 					ChatServer.log("message옴");
-				
 				}
 				else if("quit".equals(tokens[0]))
 				{
@@ -129,6 +131,22 @@ public class ChatServerThread extends Thread
 		printWriter.flush();
 	}
 	
+	// message 프로토콜
+	private void doMessage(String message)
+	{
+		//구현하기
+		broadcast(message);
+	}
+	
+	// quit 프로토콜 
+	private void doQuit(Writer writer)
+	{
+		removeWriter(writer);
+		
+		String data = nickname + "님이 퇴장 하였습니다";
+		broadcast(data);
+	}
+	
 	private void addWriter(Writer writer)
 	{
 		synchronized(listWriters)
@@ -144,35 +162,17 @@ public class ChatServerThread extends Thread
 			for(Writer writer : listWriters)
 			{
 				PrintWriter printWriter = (PrintWriter)writer;
-				  ChatServer.log("현재접속인원1"+listWriters.get(0).toString());
-				  ChatServer.log("현재접속인원2"+listWriters.get(1).toString());
+			
 				printWriter.println(data);
 				printWriter.flush();
 			}
 		}
 	}
 	
-	// message 프로토콜
-	private void doMessage(String message)
-	{
-		//구현하기
-		printWriter.println(message);
-	}
-	
-	// quit 프로토콜 
-	private void doQuit(Writer writer)
-	{
-		removeWriter(writer);
-		
-		String data = nickname + "님이 퇴장 하였습니다";
-		broadcast(data);
-	}
-	
 	private void removeWriter(Writer writer)
 	{
 		listWriters.remove(writer);
 	}
-	
 
 }
 
