@@ -80,7 +80,6 @@ public class ChatServerThread extends Thread
 		catch(SocketException e)
 		{
 			System.out.println("[server] sudden closed by client");
-			doQuit(printWriter);
 		}
 		catch(IOException e)
 		{
@@ -142,6 +141,7 @@ public class ChatServerThread extends Thread
 		{
 			listWriters.add(writer);
 		}
+		listCount();
 	}
 
 	private void broadcast(String data)
@@ -165,7 +165,21 @@ public class ChatServerThread extends Thread
 	private void removeWriter(Writer writer)
 	{
 		listWriters.remove(writer);
+		listCount();
 	}
-
+	
+	// [테스트] 인원체크용
+	private void listCount()
+	{
+		int count = 0;
+		synchronized(listWriters)
+		{
+			for(Writer writer : listWriters)
+			{
+				count++;
+			}
+		}
+		ChatServer.log("[현재접속인원] "+count+"명");
+	}
 }
 

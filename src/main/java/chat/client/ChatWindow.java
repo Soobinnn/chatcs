@@ -1,4 +1,5 @@
 package main.java.chat.client;
+
 import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.Color;
@@ -104,7 +105,11 @@ public class ChatWindow
 	private void sendMessage() 
 	{
 		String message = textField.getText();
-		//pw.println("MSG " + message);
+		
+		//아무것도 입력안했을때의 예외처리
+		if("".equals(message)|| message.isEmpty())
+			return;
+		
 		textField.setText("");
 		textField.requestFocus();
 		updateTextArea(message);
@@ -125,6 +130,7 @@ public class ChatWindow
 		printWriter.println("quit:");
 		System.exit(0);
 	}
+	
 	private class ChatClientReceiveThread extends Thread
 	{
 		Socket socket = null;
