@@ -19,7 +19,8 @@ public class ChatServerThread extends Thread
 	private List<Writer> listWriters;
 	BufferedReader bufferedReader = null;
 	PrintWriter printWriter = null;
-	
+	InetSocketAddress inetSocketAddress;
+				
 	public ChatServerThread(Socket socket)
 	{
 		this.socket = socket;
@@ -37,8 +38,7 @@ public class ChatServerThread extends Thread
 		try
 		{
 			// 1. Remote Host Information
-			InetSocketAddress inetSocketAddress = ( InetSocketAddress )socket.getRemoteSocketAddress();
-			ChatServer.log( "connected from " + inetSocketAddress.getAddress().getHostAddress() + ":" + inetSocketAddress.getPort() );
+			inetSocketAddress = ( InetSocketAddress )socket.getRemoteSocketAddress();
 			
 			// 2. 스트림 얻기
 			bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream(),"utf-8"));
@@ -116,6 +116,8 @@ public class ChatServerThread extends Thread
 		addWriter(writer);
 		
 		ChatServer.log(nickName+"님 입장~");
+		ChatServer.log( "connected from " + inetSocketAddress.getAddress().getHostAddress() + ":" + inetSocketAddress.getPort() );
+		
 		//ack
 		printWriter.println("join:ok");
 		printWriter.flush();
