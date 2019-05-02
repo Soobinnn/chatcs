@@ -2,7 +2,6 @@ package main.java.chat.server;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -24,10 +23,10 @@ private static final int PORT = 7000;
 			serverSocket = new ServerSocket();
 				
 			// 2. 바인딩
-			String hostAddress = InetAddress.getLocalHost().getHostAddress();
-			serverSocket.bind(new InetSocketAddress(hostAddress, PORT));
-			log("연결 기다림 " + hostAddress + ":" + PORT);
-			//log("연결 기다림 :" + PORT);
+			//String hostAddress = InetAddress.getLocalHost().getHostAddress();
+			serverSocket.bind(new InetSocketAddress("0.0.0.0", PORT));
+			//log("연결 기다림 " + hostAddress + ":" + PORT);
+			log("연결 기다림 :" + PORT);
 				
 			// 3. 요청 대기
 			while(true)

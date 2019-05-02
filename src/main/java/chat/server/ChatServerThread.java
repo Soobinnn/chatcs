@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.List;
@@ -36,6 +37,8 @@ public class ChatServerThread extends Thread
 		try
 		{
 			// 1. Remote Host Information
+			InetSocketAddress inetSocketAddress = ( InetSocketAddress )socket.getRemoteSocketAddress();
+			ChatServer.log( "connected from " + inetSocketAddress.getAddress().getHostAddress() + ":" + inetSocketAddress.getPort() );
 			
 			// 2. 스트림 얻기
 			bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream(),"utf-8"));

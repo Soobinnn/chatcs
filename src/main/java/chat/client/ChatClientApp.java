@@ -3,14 +3,13 @@ package main.java.chat.client;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Scanner;
 
 public class ChatClientApp 
 {
-	private static String SERVER_IP;
+	public static String SERVER_IP = "192.168.1.118";
 	private static final int SERVER_PORT = 7000;
 	
 	public static void main(String[] args) 
@@ -36,7 +35,6 @@ public class ChatClientApp
 		
 		try 
 		{
-			SERVER_IP = InetAddress.getLocalHost().getHostAddress();
 			// 1. 소켓 생성하기
 			socket = new Socket();
 			
