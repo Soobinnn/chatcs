@@ -125,7 +125,6 @@ public class ChatWindow
 		printWriter.println("quit:");
 		System.exit(0);
 	}
-	
 	private class ChatClientReceiveThread extends Thread
 	{
 		Socket socket = null;
@@ -157,4 +156,6 @@ public class ChatWindow
 			}
 		}
 	}
+	
 }
+

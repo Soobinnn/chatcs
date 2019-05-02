@@ -53,7 +53,7 @@ public class ChatServerThread extends Thread
 					break;
 				}
 				
-				ChatServer.log(" received : " + request);
+				ChatServer.log(" [received]" + request);
 				
 				// 4. 프로토콜 분석
 				String[] tokens = request.split(":");
@@ -65,11 +65,10 @@ public class ChatServerThread extends Thread
 				else if("message".equals(tokens[0]))
 				{
 					doMessage(tokens[1]);
-					ChatServer.log("message옴");
 				}
 				else if("quit".equals(tokens[0]))
 				{
-					//doQuit();
+					doQuit(printWriter);
 				}
 				else
 				{
@@ -81,7 +80,7 @@ public class ChatServerThread extends Thread
 		catch(SocketException e)
 		{
 			System.out.println("[server] sudden closed by client");
-			//doQuit(printWriter);
+			doQuit(printWriter);
 		}
 		catch(IOException e)
 		{
@@ -102,30 +101,19 @@ public class ChatServerThread extends Thread
 			}
 		}
 	}
-	/*
-	catch(IOException e)
-	{
-		//에러처리
-		if(request == null)
-		{
-			ChatServer.log("클라이언트로 부터 연결 끊김");
-			doQuit(printWriter);
-			break;
-		}
-	}
-	*/
 	
 	// join 프로토콜
 	private void doJoin(String nickName, Writer writer)
 	{
 		this.nickname = nickName;
 		
-		String data = nickName + "님이 참여하였습니다.";
+		String data = "["+nickName+"]" + "님이 참여하였습니다.";
 		broadcast(data);
 		
 		// writer pool에 저장
 		addWriter(writer);
-		ChatServer.log(nickName+listWriters.toArray() +"님 입장~");
+		
+		ChatServer.log(nickName+"님 입장~");
 		//ack
 		printWriter.println("join:ok");
 		printWriter.flush();
@@ -135,7 +123,8 @@ public class ChatServerThread extends Thread
 	private void doMessage(String message)
 	{
 		//구현하기
-		broadcast(message);
+		String msg = "["+nickname+"]: " +message;
+		broadcast(msg);
 	}
 	
 	// quit 프로토콜 
@@ -143,7 +132,7 @@ public class ChatServerThread extends Thread
 	{
 		removeWriter(writer);
 		
-		String data = nickname + "님이 퇴장 하였습니다";
+		String data = "["+nickname+"]" + "님이 퇴장 하였습니다.";
 		broadcast(data);
 	}
 	
@@ -161,10 +150,14 @@ public class ChatServerThread extends Thread
 		{
 			for(Writer writer : listWriters)
 			{
-				PrintWriter printWriter = (PrintWriter)writer;
-			
-				printWriter.println(data);
-				printWriter.flush();
+				PrintWriter _printWriter = (PrintWriter)writer;
+				
+				if(printWriter.equals(_printWriter))
+				{
+					continue;
+				}
+				_printWriter.println(data);
+				_printWriter.flush();
 			}
 		}
 	}
